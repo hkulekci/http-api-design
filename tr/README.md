@@ -25,29 +25,31 @@ Bu kılavuza [katkıları](CONTRIBUTING.md) kabul ediyoruz.
   *  [Güvenli Bir Bağlantı Gereklidir](#güvenli-bir-bağlantı-gereklidir)
   *  [Sürüm Bilgisi için "Accepts" Başlığı Gereklidir](#sürüm-bilgisi-için-accepts-başlığı-gereklidir)
   *  [Önbellekleme için ETags Desteği](#Önbellekleme-için-etags-desteği)
-  *  [Gözlemlemek için `Request-Ids` Oluşturun](#provide-request-ids-for-introspection)
-  *  [Range'ler ile Yüksek Boyuttaki Cevapları Parçalara Bölün](#divide-large-responses-across-requests-with-ranges)
+  *  [Gözlemlemek için `Request-Ids` Oluşturun](#gözlemlemek-için-request-ids-oluşturun)
+  *  [Range'ler ile Yüksek Boyuttaki Cevapları Parçalara Bölün](#rangeler-ile-yüksek-boyuttaki-cevapları-parçalara-bölün)
 * [İstekler](#İstekler)
-  *  [Uygun durum kodları(status codes) döndürün](#return-appropriate-status-codes)
-  *  [Uygun Olan Yerlerde Tüm Kaynakları Sunun](#provide-full-resources-where-available)
-  *  [Accept serialized JSON in request bodies](#accept-serialized-json-in-request-bodies)
-  *  [Use consistent path formats](#use-consistent-path-formats)
-    *  [Downcase paths and attributes](#downcase-paths-and-attributes)
-    *  [Support non-id dereferencing for convenience](#support-non-id-dereferencing-for-convenience)
-    *  [Çok Dallanan URL Yollarını (nested path) Azaltın](#minimize-path-nesting)
+  *  [Uygun durum kodları(status codes) döndürün](#uygun-durum-kodlarıstatus-codes-döndürün)
+  *  [Uygun Olan Yerlerde Tüm Kaynakları Sunun](#uygun-olan-yerlerde-tüm-kaynakları-sunun)
+  *  [İstek gövdesinde JSON Kabul Edin](#İstek-gövdesinde-json-kabul-edin)
+  *  [Kararlı URL Yolu Formatı Kullanın](#kararlı-url-yolu-formatı-kullanın)
+    *  [Kaynak İsimleri](#kaynak-İsimleri)
+    *  [Olaylar](#olaylar)
+    *  [URL ve Niteliklerde Küçük Harf Kullanın](#downcase-paths-and-attributes)
+    *  [ID Baz Alınmadan Veri Çekmeyi Destekleyin](#id-baz-alınmadan-veri-Çekmeyi-destekleyin)
+    *  [Çok Dallanan URL Yollarını (nested path) Azaltın](#Çok-dallanan-url-yollarını-nested-path-azaltın)
 * [Cevaplar](#cevaplar)
-  *  [Kaynaklar için (UU)ID Oluşturun](#provide-resource-uuids)
-  *  [Standart Zaman Damgaları(timestamp) Oluşturun](#provide-standard-timestamps)
-  *  [ISO8601'deki UTC zamanını kullanın](#use-utc-times-formatted-in-iso8601)
-  *  [Alt Nesnelerin (Nested Object) İlişkilendirimesi](#nest-foreign-key-relations)
-  *  [Belirli Yapıda Hatalar Oluşturun](#generate-structured-errors)
-  *  [`Rate Limit` Durumunu Gösterin](#show-rate-limit-status)
-  *  [Bütün cevaplardaki JSON bilgilerini küçüktün(minified)](#keep-json-minified-in-all-responses)
+  *  [Kaynaklar için (UU)ID Oluşturun](#kaynaklar-için-uuid-oluşturun)
+  *  [Standart Zaman Damgaları(timestamp) Oluşturun](#standart-zaman-damgalarıtimestamp-oluşturun)
+  *  [ISO8601'deki UTC zamanını kullanın](#iso8601deki-utc-zaman-formatını-kullanın)
+  *  [Dallanan Nesnelerin (Nested Object) İlişkilendirimesi](#dallanan-nesnelerin-nested-object-İlişkilendirimesi)
+  *  [Belirli Yapıda Hatalar Oluşturun](#belirli-yapıda-hatalar-oluşturun)
+  *  [`Rate Limit` Durumunu Gösterin](#rate-limit-durumunu-gösterin)
+  *  [Bütün Cevaplarda JSON Veriniz Sıkıştırılmış(minified) Olsun](#bütün-cevaplarda-json-veriniz-sıkıştırılmışminified-olsun)
 * [Artifacts](#artifacts)
-  *  [Programların Okuyabileceği(Machine-readable) JSON Şeması Oluşturun](#provide-machine-readable-json-schema)
-  *  [İnsan tarafından okunabilen döküman oluşturun](#provide-human-readable-docs)
-  *  [Çalıştırılabilir örnekler oluşturun](#provide-executable-examples)
-  *  [İstikrarı anlatın](#describe-stability)
+  *  [Programların Okuyabileceği(Machine-readable) JSON Şeması Oluşturun](#programların-okuyabileceğimachine-readable-json-Şeması-oluşturun)
+  *  [İnsanların Okuyabileceği Dökümanlar Oluşturun](#İnsanların-okuyabileceği-dökümanlar-oluşturun)
+  *  [Çalıştırılabilir Örnekler Oluşturun](#Çalıştırılabilir-Örnekler-oluşturun)
+  *  [İstikrarı Açıklayın](#İstikrarı-açıklayın)
 * [Çeviriler](#ceviriler)
 
 ### Temeller
@@ -66,13 +68,7 @@ daha çeşitli bilgi göndermek için tercih edilir.
 
 #### Güvenli Bir Bağlantı Gereklidir
 
-/-----------
-API'ye erişim için istisnasız TLS ile güvenli bir bağlantı gerekir.  
-
-Require secure connections with TLS to access the API, without exception.
-It’s not worth trying to figure out or explain when it is OK to use TLS
-and when it’s not. Just require TLS for everything.
------------/
+API'ye erişim için istisnasız TLS ile güvenli bir bağlantı kullanın.
 
 Güvensiz veri alışverişini önlemek için http veya 80 portu üzerinden gelen 
 isteklere yanıt vermeyerek, TLS olmayan istekleri basitçe reddet. Mümkün olmayan 
@@ -214,59 +210,59 @@ $ curl -X POST https://service.com/apps \
 }
 ```
 
-#### Kararlı URL Yolu FOrmatı Kullanın
+#### Kararlı URL Yolu Formatı Kullanın
 
 ##### Kaynak İsimleri
 
-Use the plural version of a resource name unless the resource in question is a singleton within the system (for example, in most systems a given user would only ever have one account). This keeps it consistent in the way you refer to particular resources.
+Eğer kaynak sistemde tekil değilse kaynakların çoğul isimlerini kullanın 
+(Örneğin, bir çok sistemde kullanıcıların sadece bir kullanıcı hesabı vardır).
+Bu özel kaynaklara tutarlılık katar.
 
-##### Actions
+##### Olaylar
 
-Prefer endpoint layouts that don’t need any special actions for
-individual resources. In cases where special actions are needed, place
-them under a standard `actions` prefix, to clearly delineate them:
+Özel bir aksiyon gerektiren durumlarda olayları standart bir `actions` öneki ile 
+tanımlayın:
 
 ```
 /resources/:resource/actions/:action
 ```
 
-e.g.
+Örneğin:
 
 ```
 /runs/{run_id}/actions/stop
 ```
 
-#### Downcase paths and attributes
+#### URL ve Niteliklerde Küçük Harf Kullanın
 
-Use downcased and dash-separated path names, for alignment with
-hostnames, e.g:
+URL yolu için küçük harf ve `-` ile ayrılmış (dash-seperated) isimler kullanın.
+Örneğin:
 
 ```
 service-api.com/users
 service-api.com/app-setups
 ```
 
-Downcase attributes as well, but use underscore separators so that
-attribute names can be typed without quotes in JavaScript, e.g.:
+Nitelikleri(attributes) küçük harfe çevirin, kelimeleri `_` kullanarak ayırın.
+Böylelikle Javascript'te tırnak işareti kullanmadan yazılabilir. Örneğin:
 
 ```
 service_class: "first"
 ```
 
-#### Support non-id dereferencing for convenience
+#### ID Baz Alınmadan Veri Çekmeyi Destekleyin
 
-In some cases it may be inconvenient for end-users to provide IDs to
-identify a resource. For example, a user may think in terms of a Heroku
-app name, but that app may be identified by a UUID. In these cases you
-may want to accept both an id or name, e.g.:
+Bazı durumlarda son kullanıcı için kaynağı ID ile ilişkilendirmek kolay 
+olmayabilir. Örneğin, kullanıcılar Heroku uygulama isimleri üzerinden 
+düşünüyorlar, ama uygulama bir UUID tarafından ile ilişkilendirilmiş olabilir.
+Bu durumda id ve name terimlerinin ikisi ile de ulaşılabilir olabilir. Örneğin:
 
 ```bash
 $ curl https://service.com/apps/{app_id_or_name}
 $ curl https://service.com/apps/97addcf0-c182
 $ curl https://service.com/apps/www-prod
 ```
-
-Do not accept only names to the exclusion of IDs.
+Bu ID'yi hariç tutup sadece isim ile veri çekilebilir yapmak değildir.
 
 #### Çok Dallanan URL Yollarını (nested path) Azaltın
 
@@ -294,10 +290,10 @@ Derin ilişkilerin dallanan yollarını ana yollarda kalacak şekilde kısıtlay
 
 Her kaynak için varsayılan olarak bir `id` parametresi oluşturun. Kullanmamak 
 için iyi bir sebebiniz olana kadar UUID'leri kullanın. Tüm heryerde tekil 
-olmayan ID'leri kullanmayın. ID'ler genelde otomatik artan (autoincrement) olduğu 
-için diğer servislerde yine karşılaşılabilirdir. 
+olmayan ID'leri kullanmayın. ID'ler genelde otomatik artan (autoincrement) 
+olduğu için diğer servislerde yine karşılaşılabilirdir. 
 
-UUID'lerin formatı `8-4-4-4-12` şeklindedir. Örneğin:
+UUID'lerin formatı küçük harflerle ve `8-4-4-4-12` şeklindedir. Örneğin:
 
 ```
 "id": "01234567-89ab-cdef-0123-456789abcdef"
@@ -328,9 +324,10 @@ ISO8601 formatında, UTC zamanını kullanın. Örneğin:
 "finished_at": "2012-01-01T12:00:00Z"
 ```
 
-#### Alt Nesnelerin (Nested Object) İlişkilendirimesi
+#### Dallanan Nesnelerin (Nested Object) İlişkilendirimesi
 
-`Foreign Key` referanslarını alt nesneler(nested object) ile gösterin, Örneğin:
+`Foreign Key` referanslarını dallanan nesneler(nested object) ile gösterin, 
+Örneğin:
 
 ```javascript
 {
@@ -352,7 +349,7 @@ Aşağıdaki gibi yapmamaya çalışın:
 }
 ```
 
-Bu yaklaşım gerektiğinde size bu alt nesneler hakında, cevabınızın yapısını 
+Bu yaklaşım gerektiğinde size bu dallanan nesneler hakında, cevabınızın yapısını 
 değiştirmeden ya da bozmadan  daha fazla bilgi verebilme imkanı sağlar. Örneğin:
 
 ```javascript
