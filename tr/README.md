@@ -20,35 +20,35 @@ Bu kılavuza [katkıları](CONTRIBUTING.md) kabul ediyoruz.
 
 ## İçerik
 
-* [Temeller](#foundations)
-  *  [Separate Concerns](#separate-concerns)
-  *  [Require Secure Connections](#require-secure-connections)
-  *  [Require Versioning in the Accepts Header](#require-versioning-in-the-accepts-header)
-  *  [Support ETags for Caching](#support-etags-for-caching)
-  *  [Provide Request-Ids for Introspection](#provide-request-ids-for-introspection)
-  *  [Divide Large Responses Across Requests with Ranges](#divide-large-responses-across-requests-with-ranges)
-* [Requests](#requests)
-  *  [Return appropriate status codes](#return-appropriate-status-codes)
-  *  [Provide full resources where available](#provide-full-resources-where-available)
+* [Temeller](#temeller)
+  *  [Kaygılarınızı Parçalayın](#kaygılarınızı-parçalayın)
+  *  [Güvenli Bir Bağlantı Gereklidir](#güvenli-bir-bağlantı-gereklidir)
+  *  [Sürüm Bilgisi için "Accepts" Başlığı Gereklidir](#sürüm-bilgisi-için-accepts-başlığı-gereklidir)
+  *  [Önbellekleme için ETags Desteği](#Önbellekleme-için-etags-desteği)
+  *  [Gözlemlemek için `Request-Ids` Oluşturun](#provide-request-ids-for-introspection)
+  *  [Range'ler ile Yüksek Boyuttaki Cevapları Parçalara Bölün](#divide-large-responses-across-requests-with-ranges)
+* [İstekler](#İstekler)
+  *  [Uygun durum kodları(status codes) döndürün](#return-appropriate-status-codes)
+  *  [Uygun Olan Yerlerde Tüm Kaynakları Sunun](#provide-full-resources-where-available)
   *  [Accept serialized JSON in request bodies](#accept-serialized-json-in-request-bodies)
   *  [Use consistent path formats](#use-consistent-path-formats)
     *  [Downcase paths and attributes](#downcase-paths-and-attributes)
     *  [Support non-id dereferencing for convenience](#support-non-id-dereferencing-for-convenience)
-    *  [Minimize path nesting](#minimize-path-nesting)
-* [Responses](#responses)
-  *  [Provide resource (UU)IDs](#provide-resource-uuids)
-  *  [Provide standard timestamps](#provide-standard-timestamps)
-  *  [Use UTC times formatted in ISO8601](#use-utc-times-formatted-in-iso8601)
-  *  [Nest foreign key relations](#nest-foreign-key-relations)
-  *  [Generate structured errors](#generate-structured-errors)
-  *  [Show rate limit status](#show-rate-limit-status)
-  *  [Keep JSON minified in all responses](#keep-json-minified-in-all-responses)
+    *  [Çok Dallanan URL Yollarını (nested path) Azaltın](#minimize-path-nesting)
+* [Cevaplar](#cevaplar)
+  *  [Kaynaklar için (UU)ID Oluşturun](#provide-resource-uuids)
+  *  [Standart Zaman Damgaları(timestamp) Oluşturun](#provide-standard-timestamps)
+  *  [ISO8601'deki UTC zamanını kullanın](#use-utc-times-formatted-in-iso8601)
+  *  [Alt Nesnelerin (Nested Object) İlişkilendirimesi](#nest-foreign-key-relations)
+  *  [Belirli Yapıda Hatalar Oluşturun](#generate-structured-errors)
+  *  [`Rate Limit` Durumunu Gösterin](#show-rate-limit-status)
+  *  [Bütün cevaplardaki JSON bilgilerini küçüktün(minified)](#keep-json-minified-in-all-responses)
 * [Artifacts](#artifacts)
-  *  [Provide machine-readable JSON schema](#provide-machine-readable-json-schema)
-  *  [Provide human-readable docs](#provide-human-readable-docs)
-  *  [Provide executable examples](#provide-executable-examples)
-  *  [Describe stability](#describe-stability)
-* [Translations](#translations)
+  *  [Programların Okuyabileceği(Machine-readable) JSON Şeması Oluşturun](#provide-machine-readable-json-schema)
+  *  [İnsan tarafından okunabilen döküman oluşturun](#provide-human-readable-docs)
+  *  [Çalıştırılabilir örnekler oluşturun](#provide-executable-examples)
+  *  [İstikrarı anlatın](#describe-stability)
+* [Çeviriler](#ceviriler)
 
 ### Temeller
 
@@ -56,43 +56,45 @@ Bu kılavuza [katkıları](CONTRIBUTING.md) kabul ediyoruz.
 
 Tasarım sırasında nesneleri(kaygılarınızı) istek(request) ve cevap(response) 
 döngüsündeki farklı bölümler arasında parçalayarak basite indirgeyin. Kuralların 
-basti tutulması büyük ve zor sorunlar için daha fazla odaklanma sağlar.
+basit tutulması büyük ve zor sorunlar için daha fazla odaklanma sağlar. 
 
-Requests and responses will be made to address a particular resource or
-collection. Use the path to indicate identity, the body to transfer the
-contents and headers to communicate metadata. Query params may be used as a
-means to pass header information also in edge cases, but headers are preferred
-as they are more flexible and can convey more diverse information.
+İstek ve cevaplar belirli bir kaynak veya koleksiyon adresine yapılacaktır. 
+Kimliği belirlemek için adres yolunu, içeriği iletmek için gövdeyi ve meta veri 
+iletişimi için başlıkları kullanın. Sorgu parametreleri farklı durumlarda başlık 
+verilerini iletmek için kullanılabilir, ama başlıklar ile iletmek daha esnek ve 
+daha çeşitli bilgi göndermek için tercih edilir.
 
-#### Güvenli Bir Bağlantı Oluşturun
+#### Güvenli Bir Bağlantı Gereklidir
 
+/-----------
 API'ye erişim için istisnasız TLS ile güvenli bir bağlantı gerekir.  
 
 Require secure connections with TLS to access the API, without exception.
 It’s not worth trying to figure out or explain when it is OK to use TLS
 and when it’s not. Just require TLS for everything.
+-----------/
 
-Güvensiz veri alışverişini önlemek için http veya 80 portu için gelen isteklere 
-yanıt vermeyerek TLS olmayan istekleri basitçe reddet. Mümkün olmayan ortamlarda 
-`403 Forbidden` ile yanıt ver. 
+Güvensiz veri alışverişini önlemek için http veya 80 portu üzerinden gelen 
+isteklere yanıt vermeyerek, TLS olmayan istekleri basitçe reddet. Mümkün olmayan 
+ortamlarda `403 Forbidden` ile yanıt ver. 
 
 Herhangi bir net kazancı olmadan özensiz/kötü istamci(client) davranışlarına 
 izin verdiği için yönlendirmelerden kaçınılmalıdır. İstemciler yönlendirmelere
 güvenerek sunucu trafiğini ikiye katlarlar ve hassas veriler ilk sorguda 
 korunmasız kaldığından TLS kullanmanın bir anlamı olmaz.
 
-#### Sürüm Bilgisi için "Accepts" Başlığı
+#### Sürüm Bilgisi için "Accepts" Başlığı Gereklidir
 
-Versioning and the transition between versions can be one of the more
-challenging aspects of designing and operating an API. As such, it is best to
-start with some mechanisms in place to mitigate this from the start.
+Sürüm ve sürümler arası geçişler API'nin işletilmesi ve tasarlanması aşamasının 
+en zor yanlarından birisidir. Bunun gibi mekanizmalar ile başlamak, en baştan 
+bu sıkıntıları azaltmak için en iyisidir.
 
-To prevent surprise, breaking changes to users, it is best to require a version
-be specified with all requests. Default versions should be avoided as they are
-very difficult, at best, to change in the future.
+Süprizleri önlemek, kullanıcıların değişikliklerini kırmak için en iyi yöntem 
+bütün isteklerde bir sürüm gerekliliği en iyisidir. Default versions should 
+be avoided as they are very difficult, at best, to change in the future.
 
-It is best to provide version specification in the headers, with other
-metadata, using the `Accept` header with a custom content type, e.g.:
+Sürüm özelliklerini başlıklar içerisinde diğer meta veriler ile birlikte sunmak 
+en iyisidir. `Accept` başlığını kullanma örneği:
 
 ```
 Accept: application/vnd.heroku+json; version=3
@@ -100,38 +102,33 @@ Accept: application/vnd.heroku+json; version=3
 
 #### Önbellekleme için ETags Desteği
 
-Bütün cevaplar(responses) özel versiyonun dönen kaynaklarını tanımlayan bir 
-`ETag` içermeli. Bu kullanıcılara kaynakları önbelleklemek için ve kendi 
+Bütün cevaplar(responses), dönen cevabın içeriğine özel tanımlayıcılar olan, 
+`ETag` içermelidir. Bu kullanıcılara kaynakları önbelleklemek için ve kendi 
 belleğindeki(cache) verinin güncellenip güncellemeyeceğini karşılaştırmak 
 için isteklerde kullanmalarına izin verir. 
+[`If-None-Match`](https://tools.ietf.org/html/rfc2616#section-14.26) 
 
-Include an `ETag` header in all responses, identifying the specific
-version of the returned resource. This allows users to cache resources
-and use requests with this value in the 
-`[If-None-Match](https://tools.ietf.org/html/rfc2616#section-14.26)` 
-header to determine if the cache should be updated.
+#### Gözlemlemek için `Request-Ids` Oluşturun
 
-#### Provide Request-Ids for Introspection
+Her API cevabında UUID değeri ile doldurulmuş, `Request-Id` başlığı olmalıdır.
+Bu değeri, istekleri `trace`, `diagnose` ve `debug` edebilmek için, sunucu, 
+istemci(client) ve diğer her servis tarafında günlükleme (logging) için 
+kullanabilirsiniz. 
 
-Include a `Request-Id` header in each API response, populated with a
-UUID value. By logging these values on the client, server and any backing
-services, it provides a mechanism to trace, diagnose and debug requests.
+#### Range'ler ile Yüksek Boyuttaki Cevapları Parçalara Bölün
 
-#### Divide Large Responses Across Requests with Ranges
+Yüksek boyutlardaki cevapları(responses) [`Range`](https://tools.ietf.org/html/rfc2616#section-14.35) 
+başlığını kullanarak bir kaç parçaya bölebilirsiniz. İstek ve cevapların 
+başlıklar, durum kodları, limitler, sıralama ve tekrarlama(iteration) hakkında 
+daha fazla bilgi için [Heroku Platform API discussion of Ranges](https://devcenter.heroku.com/articles/platform-api-reference#ranges)
+bağlantısını takip edebilirsiniz. 
 
-Large responses should be broken across multiple requests using 
-`[Range](https://tools.ietf.org/html/rfc2616#section-14.35)` headers
-to specify when more data is available and how to retrieve it. See the
-[Heroku Platform API discussion of Ranges](https://devcenter.heroku.com/articles/platform-api-reference#ranges)
-for the details of request and response headers, status codes, limits,
-ordering, and iteration.
+### İstekler
 
-### Requests
+#### Uygun Durum Kodları(status codes) Döndürün
 
-#### Return appropriate status codes
-
-Return appropriate HTTP status codes with each response. Successful
-responses should be coded according to this guide:
+Her cevapla birlikte cevaba uygun HTTP durum kodları döndürün. Başarılı cevaplar
+bu kılavuza uygun olmalı:
 
 * `200`: Request succeeded for a `GET` call, for a `DELETE` or
   `PATCH` call that completed synchronously, or for a `PUT` call that
@@ -144,26 +141,28 @@ responses should be coded according to this guide:
 * `206`: Request succeeded on `GET`, but only a partial response
   returned: see [above on ranges](#divide-large-responses-across-requests-with-ranges)
 
-Pay attention to the use of authentication and authorization error codes:
+Doğrulama(authentication) ve yetki(authorization) kodlarını kullanmaya dikkat edin:
 
 * `401 Unauthorized`: Request failed because user is not authenticated
 * `403 Forbidden`: Request failed because user does not have authorization to access a specific resource
 
-Return suitable codes to provide additional information when there are errors:
+Ek bilgilerin eklenmesi konusunda bir hata yapıldığında uygun kodları dönün:
 
 * `422 Unprocessable Entity`: Your request was understood, but contained invalid parameters
 * `429 Too Many Requests`: You have been rate-limited, retry later
 * `500 Internal Server Error`: Something went wrong on the server, check status site and/or report the issue
 
-Refer to the [HTTP response code spec](https://tools.ietf.org/html/rfc7231#section-6)
-for guidance on status codes for user error and server error cases.
+Sunucu ve kullanıcı hata durum kodları hakkında daha fazla bilgi için 
+[HTTP response code spec](https://tools.ietf.org/html/rfc7231#section-6) 
+adresini kontrol edebilirsiniz.
 
-#### Provide full resources where available
+#### Uygun Olan Yerlerde Tüm Kaynakları Sunun
 
-Provide the full resource representation (i.e. the object with all
-attributes) whenever possible in the response. Always provide the full
-resource on 200 and 201 responses, including `PUT`/`PATCH` and `DELETE`
-requests, e.g.:
+İmkan olduğu sürece tüm [kaynakları](https://tools.ietf.org/html/rfc7231#section-2) 
+(örneğin: bir nesnenin tüm niteliklerini) cevap olarak dönün. `PUT`/`PATCH` 
+ve `DELETE` istekleri dahil, [200](https://tools.ietf.org/html/rfc7231#section-6.3.1) 
+ve [201](https://tools.ietf.org/html/rfc7231#section-6.3.2) 
+cevaplarında daima tüm kaynakları geri döndürün, örneğin:
 
 ```bash
 $ curl -X DELETE \  
@@ -179,9 +178,9 @@ Content-Type: application/json;charset=utf-8
   "updated_at": "2012-01-01T12:00:00Z"
 }
 ```
-
-202 responses will not include the full resource representation,
-e.g.:
+[202](https://tools.ietf.org/html/rfc7231#section-6.3.3) cevapları 
+kaynakları(resources) içermeyecektir.  
+Örneğin:
 
 ```bash
 $ curl -X DELETE \  
@@ -193,11 +192,11 @@ Content-Type: application/json;charset=utf-8
 {}
 ```
 
-#### Accept serialized JSON in request bodies
+#### İstek gövdesinde JSON Kabul Edin
 
-Accept serialized JSON on `PUT`/`PATCH`/`POST` request bodies, either
-instead of or in addition to form-encoded data. This creates symmetry
-with JSON-serialized response bodies, e.g.:
+`form-encoded` veriyi kullanmak ya da buna ek olarak kullanmak yerine 
+`PUT`/`PATCH`/`POST` istek gövdelerinde JSON verilerini kabul edin. Bu bir 
+JSON-serialized cevap gövdesi ile bir simetri oluşturacaktır. 
 
 ```bash
 $ curl -X POST https://service.com/apps \
@@ -215,9 +214,9 @@ $ curl -X POST https://service.com/apps \
 }
 ```
 
-#### Use consistent path formats
+#### Kararlı URL Yolu FOrmatı Kullanın
 
-##### Resource names
+##### Kaynak İsimleri
 
 Use the plural version of a resource name unless the resource in question is a singleton within the system (for example, in most systems a given user would only ever have one account). This keeps it consistent in the way you refer to particular resources.
 
@@ -269,18 +268,17 @@ $ curl https://service.com/apps/www-prod
 
 Do not accept only names to the exclusion of IDs.
 
-#### Minimize path nesting
+#### Çok Dallanan URL Yollarını (nested path) Azaltın
 
-In data models with nested parent/child resource relationships, paths
-may become deeply nested, e.g.:
+Veri modelinizdeki iç içe ilişkili kaynaklar için çok fazla alt dalları oluşan 
+URL yollarından kaçının. Aşağıdaki örnek bu karmaşık yapıya örnektir.
 
 ```
 /orgs/{org_id}/apps/{app_id}/dynos/{dyno_id}
 ```
 
-Limit nesting depth by preferring to locate resources at the root
-path. Use nesting to indicate scoped collections. For example, for the
-case above where a dyno belongs to an app belongs to an org:
+Derin ilişkilerin dallanan yollarını ana yollarda kalacak şekilde kısıtlayın. 
+Örneğin, aşağıdaki örnekte `dyno` bir organizasyonun uygulamasıdır:
 
 ```
 /orgs/{org_id}
@@ -290,25 +288,25 @@ case above where a dyno belongs to an app belongs to an org:
 /dynos/{dyno_id}
 ```
 
-### Responses
+### Cevaplar
 
-#### Provide resource (UU)IDs
+#### Kaynaklar için (UU)ID Oluşturun
 
-Give each resource an `id` attribute by default. Use UUIDs unless you
-have a very good reason not to. Don’t use IDs that won’t be globally
-unique across instances of the service or other resources in the
-service, especially auto-incrementing IDs.
+Her kaynak için varsayılan olarak bir `id` parametresi oluşturun. Kullanmamak 
+için iyi bir sebebiniz olana kadar UUID'leri kullanın. Tüm heryerde tekil 
+olmayan ID'leri kullanmayın. ID'ler genelde otomatik artan (autoincrement) olduğu 
+için diğer servislerde yine karşılaşılabilirdir. 
 
-Render UUIDs in downcased `8-4-4-4-12` format, e.g.:
+UUID'lerin formatı `8-4-4-4-12` şeklindedir. Örneğin:
 
 ```
 "id": "01234567-89ab-cdef-0123-456789abcdef"
 ```
 
-#### Provide standard timestamps
+#### Standart Zaman Damgaları(timestamp) Oluşturun
 
-Provide `created_at` and `updated_at` timestamps for resources by default,
-e.g:
+`created_at` ve `updated_at` zaman damgalarını varsayılan olarak oluşturun. 
+Örneğin:
 
 ```javascript
 {
@@ -319,21 +317,20 @@ e.g:
 }
 ```
 
-These timestamps may not make sense for some resources, in which case
-they can be omitted.
+Bu zaman damgaları bazı kaynaklar için mantıklı olmayabilir, bu durumlarda 
+kullanmayabilirsiniz.
 
-#### Use UTC times formatted in ISO8601
+#### ISO8601'deki UTC Zaman Formatını Kullanın
 
-Accept and return times in UTC only. Render times in ISO8601 format,
-e.g.:
+ISO8601 formatında, UTC zamanını kullanın. Örneğin: 
 
 ```
 "finished_at": "2012-01-01T12:00:00Z"
 ```
 
-#### Nest foreign key relations
+#### Alt Nesnelerin (Nested Object) İlişkilendirimesi
 
-Serialize foreign key references with a nested object, e.g.:
+`Foreign Key` referanslarını alt nesneler(nested object) ile gösterin, Örneğin:
 
 ```javascript
 {
@@ -345,7 +342,7 @@ Serialize foreign key references with a nested object, e.g.:
 }
 ```
 
-Instead of e.g.:
+Aşağıdaki gibi yapmamaya çalışın:
 
 ```javascript
 {
@@ -355,9 +352,8 @@ Instead of e.g.:
 }
 ```
 
-This approach makes it possible to inline more information about the
-related resource without having to change the structure of the response
-or introduce more top-level response fields, e.g.:
+Bu yaklaşım gerektiğinde size bu alt nesneler hakında, cevabınızın yapısını 
+değiştirmeden ya da bozmadan  daha fazla bilgi verebilme imkanı sağlar. Örneğin:
 
 ```javascript
 {
@@ -371,12 +367,11 @@ or introduce more top-level response fields, e.g.:
 }
 ```
 
-#### Generate structured errors
+#### Belirli Yapıda Hatalar Oluşturun
 
-Generate consistent, structured response bodies on errors. Include a
-machine-readable error `id`, a human-readable error `message`, and
-optionally a `url` pointing the client to further information about the
-error and how to resolve it, e.g.:
+Tutarlı, belirli yapıda hatalar oluşturun. Bir programın okuyabileceği hata
+`id`'leri ve insanların anlayabileceği hata `message`'ları, daha fazla bilgi 
+alabilecekleri ve çözüm bulabilecekleri hata `url`'leri belirleyin. Örneğin:
 
 ```
 HTTP/1.1 429 Too Many Requests
@@ -390,30 +385,28 @@ HTTP/1.1 429 Too Many Requests
 }
 ```
 
-Document your error format and the possible error `id`s that clients may
-encounter.
+Kullanıcılarınız karşılaşabileceği hata formatlarınızı dökümante edin.
 
-#### Show rate limit status
+#### `Rate Limit` Durumunu Gösterin
 
-Rate limit requests from clients to protect the health of the service
-and maintain high service quality for other clients. You can use a
-[token bucket algorithm](http://en.wikipedia.org/wiki/Token_bucket) to
-quantify request limits.
+`Rate Limit` diğer kullanıcıların servisi sağlıklı kullanabilmeleri için 
+istemcinin isteklerinini sınırlandırılmasıdır. Bunun için 
+[token bucket algorithm](http://en.wikipedia.org/wiki/Token_bucket)
+algoritmasını kullanabilirsiniz. 
 
-Return the remaining number of request tokens with each request in the
-`RateLimit-Remaining` response header.
+Kalan istek sayılarını `RateLimit-Remaining` başlığı içerisinde sunun.
 
-#### Keep JSON minified in all responses
+#### Bütün Cevaplarda JSON Veriniz Sıkıştırılmış(minified) Olsun
 
-Extra whitespace adds needless response size to requests, and many
-clients for human consumption will automatically "prettify" JSON
-output. It is best to keep JSON responses minified e.g.:
+Ekstra boşluklar isteklerin cevaplarını gereksiz yere büyütür, ve bir çok 
+istemci zaten otomatik olarak bu verileri güzel görünür hale getirmektedir. 
+En iyisi JSON verinizi sıkıştırılmış halde tutmaktır. Örneğin:
 
 ```json
 {"beta":false,"email":"alice@heroku.com","id":"01234567-89ab-cdef-0123-456789abcdef","last_login":"2012-01-01T12:00:00Z","created_at":"2012-01-01T12:00:00Z","updated_at":"2012-01-01T12:00:00Z"}
 ```
 
-Instead of e.g.:
+Aşağıdakinin yerine:
 
 ```json
 {
@@ -426,68 +419,66 @@ Instead of e.g.:
 }
 ```
 
-You may consider optionally providing a way for clients to retreive 
-more verbose response, either via a query parameter (e.g. `?pretty=true`)
-or via an `Accept` header param (e.g.
-`Accept: application/vnd.heroku+json; version=3; indent=4;`).
+Sorgu paramatreleri ile (Örneğin: `?pretty=true`) veya başlık parametresi
+(Örneğin: `Accept: application/vnd.heroku+json; version=3; indent=4;`) olarak 
+kullanıcılarınıza güzel görünümlü hali için bir seçenek sunabilirsiniz.
 
 ### Artifacts
 
-#### Provide machine-readable JSON schema
+#### Programların Okuyabileceği(Machine-readable) JSON Şeması Oluşturun
 
-Provide a machine-readable schema to exactly specify your API. Use
-[prmd](https://github.com/interagent/prmd) to manage your schema, and ensure
-it validates with `prmd verify`.
+API arayüzünüzü ayrıntılarıyla belirtmek için programların anlayabileceği 
+şemalar oluşturun. Şemanızı yönetmek için [prmd](https://github.com/interagent/prmd) 
+kullanabilirsiniz, ve `prmd verify` ile geçerliliğini doğrulayın. 
 
-#### Provide human-readable docs
+#### İnsanların Okuyabileceği Dökümanlar Oluşturun
 
-Provide human-readable documentation that client developers can use to
-understand your API.
+API'nizi kullanmak isteyecek istemci developerların anlayabileceği dökümanlar
+oluşturun. 
 
-If you create a schema with prmd as described above, you can easily
-generate Markdown docs for all endpoints with with `prmd doc`.
+Eğer daha önce bahsedildiği gibi prmd ile bir şema oluşturursanız, `prmd doc` 
+komutu ile son kullanıcılarınıza kolayca Markdown dökümanı oluşturabilirsiniz
 
-In addition to endpoint details, provide an API overview with
-information about:
+Son kullanıcılara ek olarak, aşağıdaki konuları içeren bir API'ye genel bakış 
+bölümün oluşturun:
 
-* Authentication, including acquiring and using authentication tokens.
-* API stability and versioning, including how to select the desired API
-  version.
-* Common request and response headers.
-* Error serialization format.
-* Examples of using the API with clients in different languages.
+* Authentication(Kimlik DOğrulama), bilgilerini edinme ve kullanımı.
+* API kararlılığı ve versiyonlama, API versiyonlarını seçimi
+* Genel istek ve cevap başlıkları
+* Hata formatları
+* API arayüzünü farklı dillerdeki kullanıcılar ile kullanım örnekleri
 
-#### Provide executable examples
+#### Çalıştırılabilir Örnekler Oluşturun
 
-Provide executable examples that users can type directly into their
-terminals to see working API calls. To the greatest extent possible,
-these examples should be usable verbatim, to minimize the amount of
-work a user needs to do to try the API, e.g.:
+Kullanıcılarınızın terminal arayüzünden direk çağırabileceği çalıştırılabilir 
+örnekler hazırlayın. Bu örneklerin, kullanıcının API arayüzü ile çalışırken 
+minimum enerjiyi harcaması için, mümkün olduğunca kelimesi kelimesine 
+kullanılabilir olmasını sağlayın. Örneğin: 
 
 ```bash
 $ export TOKEN=... # acquire from dashboard
 $ curl -is https://$TOKEN@service.com/users
 ```
 
-If you use [prmd](https://github.com/interagent/prmd) to generate Markdown
-docs, you will get examples for each endpoint for free.
+Eğer siz Markdown dökümanı oluştururken [prmd](https://github.com/interagent/prmd)
+kullanırsanız, ücretsiz, her son kullanıcı örnekleriniz olur. 
 
-#### Describe stability
+#### İstikrarı Açıklayın
 
-Describe the stability of your API or its various endpoints according to
-its maturity and stability, e.g. with prototype/development/production
-flags.
+API'nizin istikrarlılığını açıklayın veya kararlılığına ve olgunluğuna göre 
+birden fazla bağlantı seçeneği sunun, örneğin: prototype/development/production
+seçenekleri ile. 
 
-See the [Heroku API compatibility policy](https://devcenter.heroku.com/articles/api-compatibility-policy)
-for a possible stability and change management approach.
+[Heroku API compatibility policy](https://devcenter.heroku.com/articles/api-compatibility-policy)
+dökümanını, yönetim yaklaşımlarınının değişikliği ve olası kararlılıkları için,
+örnek alabilirsiniz.
 
-Once your API is declared production-ready and stable, do not make
-backwards incompatible changes within that API version. If you need to
-make backwards-incompatible changes, create a new API with an
-incremented version number.
+API arayüzünüz kararlı ve production'a bir kez çıktıktan sonra geriye dönük 
+versiyon uyumsuzlukları çıkarmamaya çalışın. Eğer böyle bir uyumsuzluk olması 
+gerekiyor ise yeni bir version numarası ile API çıkarın. 
 
 
-### Translations
+### Çeviriler
  * [Korean version](https://github.com/yoondo/http-api-design) (based on [f38dba6](https://github.com/interagent/http-api-design/commit/f38dba6fd8e2b229ab3f09cd84a8828987188863)), by [@yoondo](https://github.com/yoondo/)
  * [Simplified Chinese version](https://github.com/ZhangBohan/http-api-design-ZH_CN) (based on [337c4a0](https://github.com/interagent/http-api-design/commit/337c4a05ad08f25c5e232a72638f063925f3228a)), by [@ZhangBohan](https://github.com/ZhangBohan/)
  * [Traditional Chinese version](https://github.com/kcyeu/http-api-design) (based on [232f8dc](https://github.com/interagent/http-api-design/commit/232f8dc6a941d0b25136bf64998242dae5575f66)), by [@kcyeu](https://github.com/kcyeu/)
