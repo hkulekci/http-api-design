@@ -62,19 +62,19 @@ basit tutulması büyük ve zor sorunlar için daha fazla odaklanma sağlar.
 
 İstek ve cevaplar belirli bir kaynak veya koleksiyon adresine yapılacaktır. 
 Kimliği belirlemek için adres yolunu, içeriği iletmek için gövdeyi ve meta veri 
-iletişimi için başlıkları kullanın. Sorgu parametreleri farklı durumlarda başlık 
+iletişimi için başlıkları kullanın. Sorgu parametreleri farklı durumlarda başlık(header) 
 verilerini iletmek için kullanılabilir, ama başlıklar ile iletmek daha esnek ve 
 daha çeşitli bilgi göndermek için tercih edilir.
 
 #### Güvenli Bir Bağlantı Gereklidir
 
-API'ye erişim için istisnasız TLS ile güvenli bir bağlantı kullanın.
+API'ye erişim için istisnasız TLS(Transport Layer Security) ile güvenli bir bağlantı kullanın.
 
 Güvensiz veri alışverişini önlemek için http veya 80 portu üzerinden gelen 
 isteklere yanıt vermeyerek, TLS olmayan istekleri basitçe reddet. Mümkün olmayan 
 ortamlarda `403 Forbidden` ile yanıt ver. 
 
-Herhangi bir net kazancı olmadan özensiz/kötü istamci(client) davranışlarına 
+Herhangi bir net kazancı olmadan özensiz/kötü istemci(client) davranışlarına 
 izin verdiği için yönlendirmelerden kaçınılmalıdır. İstemciler yönlendirmelere
 güvenerek sunucu trafiğini ikiye katlarlar ve hassas veriler ilk sorguda 
 korunmasız kaldığından TLS kullanmanın bir anlamı olmaz.
@@ -86,8 +86,9 @@ en zor yanlarından birisidir. Bunun gibi mekanizmalar ile başlamak, en baştan
 bu sıkıntıları azaltmak için en iyisidir.
 
 Süprizleri önlemek, kullanıcıların değişikliklerini kırmak için en iyi yöntem 
-bütün isteklerde bir sürüm gerekliliği en iyisidir. Default versions should 
-be avoided as they are very difficult, at best, to change in the future.
+bütün isteklerde bir sürüm gerekliliği en iyisidir. Bu anlamda en iyisi, daha 
+sonra bir değişiklik yapmanın zor olmasını engellemek için varsayılan versiyonlar
+kullanılmamalıdır.
 
 Sürüm özelliklerini başlıklar içerisinde diğer meta veriler ile birlikte sunmak 
 en iyisidir. `Accept` başlığını kullanma örneği:
@@ -126,27 +127,21 @@ bağlantısını takip edebilirsiniz.
 Her cevapla birlikte cevaba uygun HTTP durum kodları döndürün. Başarılı cevaplar
 bu kılavuza uygun olmalı:
 
-* `200`: Request succeeded for a `GET` call, for a `DELETE` or
-  `PATCH` call that completed synchronously, or for a `PUT` call that
-  synchronously updated an existing resource
-* `201`: Request succeeded for a `POST` call that completed
-  synchronously, or for a `PUT` call that synchronously created a new
-  resource
-* `202`: Request accepted for a `POST`, `PUT`, `DELETE`, or `PATCH` call that
-  will be processed asynchronously
-* `206`: Request succeeded on `GET`, but only a partial response
-  returned: see [above on ranges](#divide-large-responses-across-requests-with-ranges)
+* `200`: `GET` metodu ile yapılan istek başarılıdır. `DELETE` veya `PATCH` metodu ile yapılan istekler(requests) senkronlu bir şekilde tamamlanmıştır, veya `PUT` metodu ile yapılan istek(request) senkron bir şekilde var olan içeriği güncellemiştir.
+* `201`: Senkron bir şekilde yapılan `POST` veya senkron bir şekilde yeni bir içerik yaratan`PUT` isteği(request) başarılı olarak tamamlanmıştır.
+* `202`: `POST`, `PUT`, `DELETE`, veya `PATCH` metodu ile asenkron bir şekilde yapılan istek(request) kabul edilmiştir.
+* `206`: `GET` ile yapılan istek(request) başarılıdır, fakat sadece cevabın(response) bir kısmı dönmüştür: bakınız [Range'ler ile Yüksek Boyuttaki Cevapları Parçalara Bölün](#divide-large-responses-across-requests-with-ranges)
 
 Doğrulama(authentication) ve yetki(authorization) kodlarını kullanmaya dikkat edin:
 
-* `401 Unauthorized`: Request failed because user is not authenticated
-* `403 Forbidden`: Request failed because user does not have authorization to access a specific resource
+* `401 Unauthorized`: Kullanıcı yetkilendirilmediği için istek(request) başarısız olmuştur.
+* `403 Forbidden`: Kullanıcının belli bir bölüme ulaşma yetkisi olmadığı için istek başarısız olmuştur.
 
 Ek bilgilerin eklenmesi konusunda bir hata yapıldığında uygun kodları dönün:
 
-* `422 Unprocessable Entity`: Your request was understood, but contained invalid parameters
-* `429 Too Many Requests`: You have been rate-limited, retry later
-* `500 Internal Server Error`: Something went wrong on the server, check status site and/or report the issue
+* `422 Unprocessable Entity`: Yapılan istek anlamlandırılmış, fakat gönderilen parametler doğru değildir.
+* `429 Too Many Requests`: Yapılan istek sayısı izin verilen limite ulaşmıştır, tekrar deneyin.
+* `500 Internal Server Error`: Sunucu üzerinde bir şeyler ters gitti, kontrol edin veya yetkili kişiye rapor edin.
 
 Sunucu ve kullanıcı hata durum kodları hakkında daha fazla bilgi için 
 [HTTP response code spec](https://tools.ietf.org/html/rfc7231#section-6) 
