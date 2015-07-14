@@ -11,7 +11,7 @@ verir. Umarız Heroku dışındaki API tasarımcılarına da yarar sağlar.
 
 Bizim amaçlarımız oyalanma tasarımından kaçarak tutarlılık ve iş mantığına 
 odaklanmak. API tasarımı için _sadece ve en ideal olan yolu_ değil _iyi, 
-tutarlı, güzel dökümante edilmiş bir yol_ aramaktayız.
+tutarlı, güzel dokümante edilmiş bir yol_ aramaktayız.
 
 Basit HTTP+JSON API arayüzü hakkında bilgi sahibi olduğunuzu varsayıyoruz ve 
 bu kılavuz API'nin temel konularından bir çok şeyi kapsamayacak.
@@ -47,7 +47,7 @@ Bu kılavuza [katkıları](CONTRIBUTING.md) kabul ediyoruz.
   *  [Bütün Cevaplarda JSON Veriniz Sıkıştırılmış(minified) Olsun](#bütün-cevaplarda-json-veriniz-sıkıştırılmışminified-olsun)
 * [Artifacts](#artifacts)
   *  [Programların Okuyabileceği(Machine-readable) JSON Şeması Oluşturun](#programların-okuyabileceğimachine-readable-json-Şeması-oluşturun)
-  *  [İnsanların Okuyabileceği Dökümanlar Oluşturun](#İnsanların-okuyabileceği-dökümanlar-oluşturun)
+  *  [İnsanların Okuyabileceği Dökümanlar Oluşturun](#İnsanların-okuyabileceği-dokümanlar-oluşturun)
   *  [Çalıştırılabilir Örnekler Oluşturun](#Çalıştırılabilir-Örnekler-oluşturun)
   *  [İstikrarı Açıklayın](#İstikrarı-açıklayın)
 * [Çeviriler](#ceviriler)
@@ -377,7 +377,7 @@ HTTP/1.1 429 Too Many Requests
 }
 ```
 
-Kullanıcılarınız karşılaşabileceği hata formatlarınızı dökümante edin.
+Kullanıcılarınız karşılaşabileceği hata formatlarınızı dokümante edin.
 
 #### `Rate Limit` Durumunu Gösterin
 
@@ -425,11 +425,11 @@ kullanabilirsiniz, ve `prmd verify` ile geçerliliğini doğrulayın.
 
 #### İnsanların Okuyabileceği Dökümanlar Oluşturun
 
-API'nizi kullanmak isteyecek istemci developerların anlayabileceği dökümanlar
+API'nizi kullanmak isteyecek istemci developerların anlayabileceği dokümanlar
 oluşturun. 
 
 Eğer daha önce bahsedildiği gibi prmd ile bir şema oluşturursanız, `prmd doc` 
-komutu ile son kullanıcılarınıza kolayca Markdown dökümanı oluşturabilirsiniz
+komutu ile son kullanıcılarınıza kolayca Markdown dokümanı oluşturabilirsiniz
 
 Son kullanıcılara ek olarak, aşağıdaki konuları içeren bir API'ye genel bakış 
 bölümün oluşturun:
@@ -452,7 +452,7 @@ $ export TOKEN=... # acquire from dashboard
 $ curl -is https://$TOKEN@service.com/users
 ```
 
-Eğer siz Markdown dökümanı oluştururken [prmd](https://github.com/interagent/prmd)
+Eğer siz Markdown dokümanı oluştururken [prmd](https://github.com/interagent/prmd)
 kullanırsanız, ücretsiz, her son kullanıcı örnekleriniz olur. 
 
 #### İstikrarı Açıklayın
@@ -462,7 +462,7 @@ birden fazla bağlantı seçeneği sunun, örneğin: prototype/development/produ
 seçenekleri ile. 
 
 [Heroku API compatibility policy](https://devcenter.heroku.com/articles/api-compatibility-policy)
-dökümanını, yönetim yaklaşımlarınının değişikliği ve olası kararlılıkları için,
+dokümanını, yönetim yaklaşımlarınının değişikliği ve olası kararlılıkları için,
 örnek alabilirsiniz.
 
 API arayüzünüz kararlı ve production'a bir kez çıktıktan sonra geriye dönük 
