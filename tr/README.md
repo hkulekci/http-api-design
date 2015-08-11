@@ -47,7 +47,7 @@ Bu kılavuza [katkıları](CONTRIBUTING.md) kabul ediyoruz.
   *  [Bütün Cevaplarda JSON Veriniz Sıkıştırılmış(minified) Olsun](#bütün-cevaplarda-json-veriniz-sıkıştırılmışminified-olsun)
 * [Artifacts](#artifacts)
   *  [Programların Okuyabileceği(Machine-readable) JSON Şeması Oluşturun](#programların-okuyabileceğimachine-readable-json-Şeması-oluşturun)
-  *  [İnsanların Okuyabileceği Dökümanlar Oluşturun](#İnsanların-okuyabileceği-dokümanlar-oluşturun)
+  *  [İnsanların Okuyabileceği Dokümanlar Oluşturun](#İnsanların-okuyabileceği-dokümanlar-oluşturun)
   *  [Çalıştırılabilir Örnekler Oluşturun](#Çalıştırılabilir-Örnekler-oluşturun)
   *  [İstikrarı Açıklayın](#İstikrarı-açıklayın)
 * [Çeviriler](#ceviriler)
@@ -423,7 +423,7 @@ API arayüzünüzü ayrıntılarıyla belirtmek için programların anlayabilece
 şemalar oluşturun. Şemanızı yönetmek için [prmd](https://github.com/interagent/prmd) 
 kullanabilirsiniz, ve `prmd verify` ile geçerliliğini doğrulayın. 
 
-#### İnsanların Okuyabileceği Dökümanlar Oluşturun
+#### İnsanların Okuyabileceği Dokümanlar Oluşturun
 
 API'nizi kullanmak isteyecek istemci developerların anlayabileceği dokümanlar
 oluşturun. 
